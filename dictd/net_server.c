@@ -93,7 +93,15 @@ int net_open_tcp (
 			if (err != 0){
 				err_fatal_errno(__func__, "Can't setsockopt\n");
 			}
+			if (address_family == AF_INET6) { // prevent dual stack. TODO: use dual stack when available.
+				err = setsockopt (s, IPPROTO_IPV6, IPV6_V6ONLY, &one, sizeof (one));
+				if (err != 0){
+					err_fatal_errno(__func__, "Can't setsockopt for ipv6 only\n");
+				}
+			}
 		}
+
+
 
 		if (bind(s, r->ai_addr, r->ai_addrlen) < 0) {
 			if (r->ai_next != NULL) {
